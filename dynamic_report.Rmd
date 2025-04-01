@@ -1,0 +1,56 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+```
+
+## How many target advertisements do we see on youtube and how do we react?
+
+I wish to know how many advertisement on youtube we see per day and how do we react to it. So I published a google form do conduct a survey about it. After a certain time, 20 responses are collected. With the response data, I created a data frame to analyze it. First I created a graph to analyze the count of user react to it. See the below chart.
+
+```{r}
+library(tidyverse)
+logged_data <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRbS3frsbszXAXF3iOEbSFsXeUTuyCLUnBRpJtQYLAvpO1h5ndzjR3bJzFP8lumTuUz8MzUiZKmqaTt/pub?output=csv") %>%
+  #rename the variable to shorten the length of original questions
+  rename(Time_stamp = 1,
+         Ad_type = 2,
+         Ad_num = 3,
+         Ad_length = 4,
+         Ad_react = 5)
+
+#Create a new data frame using only the data I wanted.
+latest_data <- logged_data %>%
+  select(Time_stamp, Ad_num, Ad_length)
+ggplot(data = logged_data) + 
+  geom_bar(aes(y = Ad_react), fill = "#0000FF") +
+  labs(title = "User react to youtube ads",
+       subtitle = "Find out what user usually react when they see a ads",
+       caption = "Source: Good form",
+       y = "User's react to the Ads",
+       x = "count of reacts")
+
+```
+
+From this chart, we could know that half of the responses choose to ignore/skip the ads, only a few responses will click in when a advertisement pops out. There's another chart to analyse the advertisement watched and length of it.
+
+```{r}
+ggplot(data = latest_data) +
+  geom_bar(aes(x = Ad_num, fill = Ad_length)) + 
+  labs(title = "Ads watched and length distribution",
+       subtitle = "Find out the number of ads watched per day and their length",
+       caption = "Source: Good form",
+       x = "Ads watched in a day",
+       y = "count of ads watched in a day")
+
+paste("From the 20 responses,", max(latest_data$Ad_num), "is the biggest number of ads watched in a day and the average number of advertisement watched in a day is", (sum(latest_data$Ad_num)/20), "minutes long."
+    )
+```
+
+We can see the value clearly on the chart will most of the ads are under 30 seconds and few ads are over 5 minutes.
